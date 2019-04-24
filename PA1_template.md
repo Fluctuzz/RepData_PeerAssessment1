@@ -7,7 +7,8 @@ output:
 
 
 ## Loading and preprocessing the data
-```{r echo=TRUE}
+
+```r
 suppressMessages(library(dplyr))
 suppressMessages(library(lattice))
 unzip("activity.zip")
@@ -16,21 +17,38 @@ activityDataset$date <- as.Date(activityDataset$date)
 ```
 
 ## What is mean total number of steps taken per day?
-```{r echo=TRUE}
+
+```r
 totalStepsPerDay <- activityDataset %>%
         group_by(date) %>% 
         summarise(totalPerDay = sum(steps, na.rm = TRUE)) %>%
         .$totalPerDay
 
 hist(totalStepsPerDay)
-mean(totalStepsPerDay)
-median(totalStepsPerDay)
+```
 
+![](PA1_template_files/figure-html/unnamed-chunk-2-1.png)<!-- -->
+
+```r
+mean(totalStepsPerDay)
+```
+
+```
+## [1] 9354.23
+```
+
+```r
+median(totalStepsPerDay)
+```
+
+```
+## [1] 10395
 ```
 
 
 ## What is the average daily activity pattern?
-```{r echo=TRUE}
+
+```r
 averageStepsPerInterval <- activityDataset %>%
     group_by(interval) %>%
     summarise(averageStepsPerInterval = mean(steps, na.rm = TRUE)) %>%
@@ -43,19 +61,33 @@ names(averageStepsPerInterval) <- c("interval", "average_number_of_steps")
 
 plot(averageStepsPerInterval, type="l")
 ```
-```{r echo=TRUE}
+
+![](PA1_template_files/figure-html/unnamed-chunk-3-1.png)<!-- -->
+
+```r
 # Maximum average steps per interval
 averageStepsPerInterval %>% 
     filter(average_number_of_steps == max(average_number_of_steps))%>%
     .$interval
 ```
 
+```
+## [1] 835
+```
+
 
 ## Imputing missing values
-```{r echo=TRUE}
+
+```r
 #Number of rows with Nas (only column "steps" has NAs)
 sum(is.na(activityDataset$steps))
+```
 
+```
+## [1] 2304
+```
+
+```r
 #Replace Nas by the average Step total at that interval
 tidyActivityDataset <- activityDataset %>% mutate(steps = ifelse(is.na(steps), 
             averageStepsPerInterval %>% filter(interval == interval) %>% .$average_number_of_steps
@@ -67,14 +99,31 @@ totalStepsPerDay <- tidyActivityDataset %>%
         .$totalPerDay
 
 hist(totalStepsPerDay)
+```
+
+![](PA1_template_files/figure-html/unnamed-chunk-5-1.png)<!-- -->
+
+```r
 mean(totalStepsPerDay)
+```
+
+```
+## [1] 10766.19
+```
+
+```r
 median(totalStepsPerDay)
+```
+
+```
+## [1] 10766.19
 ```
 The mean and also median rose a bit after imputing the Nas. Furthermore the histogram got narrower, because the Nas were replaced with median value of the interval.
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
-```{r echo=TRUE}
+
+```r
 #Abbreviated Weekdays in German
 abbreviatedWeekdays <- c("Mo","Di","Mi","Do","Fr")
 
@@ -93,6 +142,7 @@ test <- tidyActivityDataset %>%
     ungroup()
 
 xyplot(meanPerDay ~ interval | weekindicator , test, type="l", layout=c(1,2))
-    
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-6-1.png)<!-- -->
 
