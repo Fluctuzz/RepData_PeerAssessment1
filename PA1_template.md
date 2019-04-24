@@ -135,13 +135,12 @@ tidyActivityDataset <- mutate(tidyActivityDataset, weekindicator = factor(ifelse
 )))
 
 #Create panel plot
-
-test <- tidyActivityDataset %>%
-    group_by(weekindicator,interval) %>%
-    summarise(meanPerDay = mean(steps, na.rm = TRUE)) %>%
+tidyActivityDataset <- tidyActivityDataset %>%
+    group_by(interval, weekindicator) %>%
+    summarise(meanPerInterval = mean(steps, na.rm = TRUE)) %>%
     ungroup()
 
-xyplot(meanPerDay ~ interval | weekindicator , test, type="l", layout=c(1,2))
+xyplot(meanPerInterval ~ interval | weekindicator , tidyActivityDataset, type="l", layout=c(1,2))
 ```
 
 ![](PA1_template_files/figure-html/unnamed-chunk-6-1.png)<!-- -->
